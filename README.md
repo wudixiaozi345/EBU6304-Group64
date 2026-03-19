@@ -3,7 +3,7 @@
 GitHub Username       QMID         Role       
 --------------------- ------------ -----------
 wudixiaozi345         231226325    Group Lead 
-lianruofei0305        231226026    Member     
+lianruofei0305        231226026      Member     
 lilicoiii                          Member     
 Renee1214                          Member     
 vivixi88                           Member     
