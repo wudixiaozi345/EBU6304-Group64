@@ -1,6 +1,7 @@
 package common;
 
 public class Constants {
+    public static final String COURSES_CSV = "data/courses.csv";
     public static final String DATA_PATH = "data/";
     public static final String MO_ACCOUNT_FILE = "mo_account.csv";
 
