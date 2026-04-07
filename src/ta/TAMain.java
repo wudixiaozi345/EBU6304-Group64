@@ -5,12 +5,18 @@ import ta.model.TAProfile;
 import ta.model.TAProfileDraft;
 import ta.service.TAAccountService;
 import ta.service.TAProfileService;
+import ta.service.TAPositionService;
+import ta.service.TAApplicationService;
+import ta.service.TAInterviewService;
 
 public class TAMain {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static final TAAccountService accountService = new TAAccountService();
     private static final TAProfileService profileService = new TAProfileService();
+    private static final TAPositionService positionService = new TAPositionService();
+    private static final TAApplicationService applicationService = new TAApplicationService();
+    private static final TAInterviewService interviewService = new TAInterviewService();
 
     public static void main(String[] args) {
         while (true) {
@@ -24,8 +30,13 @@ public class TAMain {
             System.out.println("7. Load Valid Draft");
             System.out.println("8. View My Profile");
             System.out.println("9. Preview Resume PDF");
-            System.out.println("10. Logout");
-            System.out.println("11. Exit");
+            System.out.println("10. Browse Positions");
+            System.out.println("11. Apply for Position");
+            System.out.println("12. View My Application Status");
+            System.out.println("13. View Interview Notice");
+            System.out.println("14. Confirm / Reschedule Interview");
+            System.out.println("15. Logout");
+            System.out.println("16. Exit");
             System.out.print("Select: ");
 
             String choice = scanner.nextLine();
@@ -59,9 +70,24 @@ public class TAMain {
                     previewResume();
                     break;
                 case "10":
-                    accountService.logout();
+                    browsePositions();
                     break;
                 case "11":
+                    applyForPosition();
+                    break;
+                case "12":
+                    viewMyApplicationStatus();
+                    break;
+                case "13":
+                    viewInterviewNotice();
+                    break;
+                case "14":
+                    confirmOrRescheduleInterview();
+                    break;
+                case "15":
+                    accountService.logout();
+                    break;
+                case "16":
                     System.out.println("Bye.");
                     return;
                 default:
@@ -200,6 +226,46 @@ public class TAMain {
         }
 
         profileService.previewResume(email);
+    }
+
+    private static void browsePositions() {
+        String email = requireLogin();
+        if (email == null) {
+            return;
+        }
+        positionService.browsePositions();
+    }
+
+    private static void applyForPosition() {
+        String email = requireLogin();
+        if (email == null) {
+            return;
+        }
+        applicationService.applyForPosition(email);
+    }
+
+    private static void viewMyApplicationStatus() {
+        String email = requireLogin();
+        if (email == null) {
+            return;
+        }
+        applicationService.viewMyApplicationStatus(email);
+    }
+
+    private static void viewInterviewNotice() {
+        String email = requireLogin();
+        if (email == null) {
+            return;
+        }
+        interviewService.viewInterviewNotice(email);
+    }
+
+    private static void confirmOrRescheduleInterview() {
+        String email = requireLogin();
+        if (email == null) {
+            return;
+        }
+        interviewService.confirmOrRescheduleInterview(email);
     }
 
     private static String requireLogin() {

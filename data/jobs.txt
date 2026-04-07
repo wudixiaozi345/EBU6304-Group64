@@ -1,0 +1,2 @@
+EBU6304,2,Mark assignments and support tutorials,2026-04-20,Java experience preferred
+ECS639U,1,Assist in lab sessions and answer questions,2026-04-22,Database knowledge preferred
