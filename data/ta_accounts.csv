@@ -1,0 +1,3 @@
+email,password,verified,verificationCode,codeCreateTime,lastLoginTime
+test@qmul.ac.uk,Password123,true,287913,1775046263251,1775046374985
+testqwe@qmul.ac.uk,Aa123456,true,617675,1775093942053,1775099488719
