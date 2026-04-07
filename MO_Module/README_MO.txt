@@ -1,1 +1,0 @@
-This is the MO module development plan.
