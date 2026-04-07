@@ -1,1 +1,6 @@
-staffId,moName,email,status
+"staff_id","password","name","email","status"
+"mo001","mo123","Dr. Alice Smith","alice.smith@qm.edu","enabled"
+"mo002","mo123","Prof. Bob Jones","bob.jones@qm.edu","enabled"
+"mo003","mo123","Dr. Charlie Brown","charlie.brown@qm.edu","enabled"
+"mo004","mo123","Prof. Diana Prince","diana.prince@qm.edu","disabled"
+"mo005","mo123","linda","12345@qm.edu","disabled"
