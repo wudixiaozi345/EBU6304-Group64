@@ -1,0 +1,5 @@
+"id","position_id","student_id","status","reason"
+"A002","P002","2023002","accepted","Welcome aboard!"
+"A003","P003","2023003","rejected","Skills mismatch"
+"A004","P001","2023004","pending",""
+"40942a05-5036-4789-80aa-9bd4b02340c5","P002","2023001","accepted","","2026-04-02T23:41:48.832"

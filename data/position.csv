@@ -1,0 +1,7 @@
+"id","course_id","title","requirements","status","deadline","vacancies","mo_id"
+"P001","EBU6304","Java Lab Assistant","Java;Testing;Agile","open","2026-05-15","2","mo001"
+"P002","EBU5001","Frontend Helper","React;Tailwind;JavaScript","open","2026-05-20","2","mo001"
+"P003","EBU4002","SQL Tutor","SQL;Database Design","open","2026-05-25","3","mo002"
+"P004","EBU7001","AI Research Assistant","Python;Machine Learning","open","2026-05-30","2","mo003"
+"P005","EBU6005","Network Lab Tech","TCP/IP;C++;Linux","open","2026-06-05","2","mo002"
+"920f3cda-96ca-430f-a9b0-2213650622e5","EBU6304","0000001111111","mmmmmmm","open","2026-04-24","1","mo001"
