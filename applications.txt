@@ -1,3 +1,1 @@
-Charlie,3.9,Math,cv_charlie.pdf,Pending,None
-Alice,3.8,Computer Science,cv_alice.pdf,Pending,None
-Bob,3.2,Electronics,cv_bob.pdf,Accepted,no
+
