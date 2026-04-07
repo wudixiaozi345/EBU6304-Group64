@@ -1,0 +1,5 @@
+id,position_id,student_id,status,reason
+A001,P001,2023001,pending,
+A002,P002,2023002,accepted,Welcome aboard!
+A003,P003,2023003,rejected,Skills mismatch
+A004,P001,2023004,pending,
