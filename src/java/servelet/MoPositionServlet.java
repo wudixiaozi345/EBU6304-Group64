@@ -17,7 +17,8 @@ import java.util.stream.Collectors;
 
 public class MoPositionServlet extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null || !"mo".equals(user.getRole())) {
@@ -27,9 +28,9 @@ public class MoPositionServlet extends HttpServlet {
 
         List<Course> myCourses = CSVService.readCourses().stream()
                 .filter(c -> user.getId().equals(c.getMoId()))
-            .sorted(Comparator
-                .comparing((Course c) -> !"active".equalsIgnoreCase(c.getStatus()))
-                .thenComparing(Course::getId))
+                .sorted(Comparator
+                        .comparing((Course c) -> !"active".equalsIgnoreCase(c.getStatus()))
+                        .thenComparing(Course::getId))
                 .collect(Collectors.toList());
 
         Set<String> myCourseIds = myCourses.stream().map(Course::getId).collect(Collectors.toSet());
@@ -54,7 +55,8 @@ public class MoPositionServlet extends HttpServlet {
 
         String editId = request.getParameter("editId");
         if (editId != null && !editId.isEmpty()) {
-            myPositions.stream().filter(p -> p.getId().equals(editId)).findFirst().ifPresent(pos -> request.setAttribute("editPosition", pos));
+            myPositions.stream().filter(p -> p.getId().equals(editId)).findFirst()
+                    .ifPresent(pos -> request.setAttribute("editPosition", pos));
         }
 
         request.setAttribute("courses", myCourses);
@@ -63,7 +65,8 @@ public class MoPositionServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null || !"mo".equals(user.getRole())) {
@@ -79,6 +82,9 @@ public class MoPositionServlet extends HttpServlet {
             String requirements = request.getParameter("requirements");
             String deadline = request.getParameter("deadline");
             String vacancies = request.getParameter("vacancies");
+            String preferredCondition = request.getParameter("preferredCondition");
+            String minGpa = request.getParameter("minGpa");
+            String minEnglishScore = request.getParameter("minEnglishScore");
 
             if (courseId == null || courseId.isEmpty() || title == null || title.isEmpty()) {
                 response.sendRedirect(request.getContextPath() + "/mo/positions?error=missing");
@@ -90,7 +96,8 @@ public class MoPositionServlet extends HttpServlet {
                 return;
             }
 
-            Position position = new Position(UUID.randomUUID().toString(), title, courseId, requirements, "open", deadline, vacancies, user.getId());
+            Position position = new Position(UUID.randomUUID().toString(), title, courseId, requirements, "open",
+                    deadline, vacancies, user.getId(), preferredCondition, minGpa, minEnglishScore);
             CSVService.addPosition(position);
             response.sendRedirect(request.getContextPath() + "/mo/positions?success=created");
             return;
@@ -103,6 +110,9 @@ public class MoPositionServlet extends HttpServlet {
             String requirements = request.getParameter("requirements");
             String deadline = request.getParameter("deadline");
             String vacancies = request.getParameter("vacancies");
+            String preferredCondition = request.getParameter("preferredCondition");
+            String minGpa = request.getParameter("minGpa");
+            String minEnglishScore = request.getParameter("minEnglishScore");
 
             if (id == null || id.isEmpty()) {
                 response.sendRedirect(request.getContextPath() + "/mo/positions?error=missingId");
@@ -128,6 +138,9 @@ public class MoPositionServlet extends HttpServlet {
                     p.setDeadline(deadline);
                     p.setVacancies(vacancies);
                     p.setMoId(user.getId());
+                    p.setPreferredCondition(preferredCondition);
+                    p.setMinGpa(minGpa);
+                    p.setMinEnglishScore(minEnglishScore);
                     CSVService.updatePosition(p);
                     updated = true;
                     break;
