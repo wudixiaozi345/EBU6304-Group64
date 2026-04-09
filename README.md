@@ -28,23 +28,46 @@ This is a lightweight web application built using the **Java Servlet/JSP** archi
 - `src/main/webapp/`: Web resources (JSPs, web.xml)
 - `pom.xml`: Maven dependencies
 
-## How to Run
-1.  **Prerequisites**:
-    - Install **Java JDK 11** or higher.
-    - Install **Apache Maven**.
-    - Install a servlet container like **Apache Tomcat 9.0**.
+## How to Run (Based on Current Project Configuration)
 
-2.  **Build**:
-    - Navigate to the `java-version/` directory.
-    - Run `mvn clean package`.
-    - This will generate a `recruit.war` file in the `target/` directory.
+### 1) Prerequisites
+- Install JDK 8 or above (JDK 11 is recommended).
+- Install Maven 3.6+.
 
-3.  **Deploy**:
-    - Copy the `recruit.war` file to the `webapps/` directory of your Tomcat server.
-    - Start the Tomcat server.
+### 2) Recommended: Run with Maven Embedded Tomcat
+From the `java-version/` directory, run:
 
-4.  **Access**:
-    - Open your browser and go to `http://localhost:8080/recruit/login.jsp`.
+```bash
+mvn clean
+mvn tomcat7:run
+```
 
-## Data Consistency
-The Java version is configured to read from the same `data/` directory as the Node.js version. Ensure that the `data/` directory is accessible to the Java application.
+After startup, open:
+- `http://localhost:8082/recruit/login.jsp`
+
+Notes:
+- Port `8082` and context path `/recruit` come from the `tomcat7-maven-plugin` configuration in `pom.xml`.
+- This approach does not require manual installation or deployment to an external Tomcat server.
+
+### 3) Alternative: Package and Deploy to External Tomcat
+From the `java-version/` directory, run:
+
+```bash
+mvn clean package
+```
+
+Copy the generated WAR file in `target/` (usually `recruit-system-1.0-SNAPSHOT.war`) to the external Tomcat `webapps/` directory, then start Tomcat.
+
+The access URL depends on the WAR file name:
+- If you keep the original name: `http://localhost:8080/recruit-system-1.0-SNAPSHOT/login.jsp`
+- If you rename it to `recruit.war`: `http://localhost:8080/recruit/login.jsp`
+
+### 4) Data Directory (Important)
+- The system prioritizes reading from `java-version/data/`.
+- You can also explicitly set the data directory via JVM property:
+
+```bash
+mvn tomcat7:run -Drecruit.data.dir="D:/Java Code/ta-recruitment-system/java-version/data"
+```
+
+- This directory must contain required CSV files such as `ta_account.csv` and `application.csv`.
