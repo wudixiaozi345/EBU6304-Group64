@@ -17,8 +17,8 @@
                 <input type="text" name="name" required class="w-full px-4 py-2 border rounded-lg">
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700">Email Address</label>
-                <input type="email" name="email" required class="w-full px-4 py-2 border rounded-lg">
+                <label class="block text-sm font-medium text-slate-700">Email Address (Optional)</label>
+                <input type="email" name="email" class="w-full px-4 py-2 border rounded-lg">
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700">Password</label>
