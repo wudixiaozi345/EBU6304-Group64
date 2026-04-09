@@ -17,9 +17,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 public class MoReviewServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null || !"mo".equals(user.getRole())) {
@@ -47,8 +47,7 @@ public class MoReviewServlet extends HttpServlet {
 
         Map<String, String> posTitle = positions.stream()
                 .filter(p -> p.getId() != null)
-                .collect(
-                        Collectors.toMap(Position::getId, p -> Objects.toString(p.getTitle(), "Unknown"), (a, b) -> a));
+                .collect(Collectors.toMap(Position::getId, p -> Objects.toString(p.getTitle(), "Unknown"), (a, b) -> a));
 
         String statusFilter = Optional.ofNullable(request.getParameter("status")).orElse("all").toLowerCase();
         String sortOrder = Optional.ofNullable(request.getParameter("sort")).orElse("desc").toLowerCase();
@@ -78,9 +77,8 @@ public class MoReviewServlet extends HttpServlet {
                     .orElse("");
             app.setCourseId(courseId);
 
-            // Load resume snapshot for this specific application, fallback to latest TA
-            // profile resume
-            app.setResume(Optional.ofNullable(CSVService.getApplicationResume(app.getId()))
+                // Load resume snapshot for this specific application, fallback to latest TA profile resume
+                app.setResume(Optional.ofNullable(CSVService.getApplicationResume(app.getId()))
                     .orElse(CSVService.getResume(app.getStudentId())));
         }
 
@@ -89,8 +87,7 @@ public class MoReviewServlet extends HttpServlet {
             comparator = Comparator.comparing(this::parseGpaSafe);
         } else if ("major".equals(sortBy)) {
             comparator = Comparator.comparing(a -> {
-                if (a.getResume() == null || a.getResume().getMajor() == null)
-                    return "";
+                if (a.getResume() == null || a.getResume().getMajor() == null) return "";
                 return a.getResume().getMajor().toLowerCase();
             });
         } else {
@@ -102,25 +99,16 @@ public class MoReviewServlet extends HttpServlet {
         }
         apps.sort(comparator);
 
-        System.out.println("[MoReviewServlet] user=" + user.getId() + ", myCourses=" + myCourses.size() + ", positions="
-                + positions.size() + ", appsFound=" + apps.size());
+        System.out.println("[MoReviewServlet] user=" + user.getId() + ", myCourses=" + myCourses.size() + ", positions=" + positions.size() + ", appsFound=" + apps.size());
 
-        long pendingCount = CSVService.readApplications().stream()
-                .filter(a -> positions.stream().anyMatch(p -> Objects.equals(p.getId(), a.getPositionId())))
-                .map(a -> Optional.ofNullable(a.getStatus()).orElse("pending"))
-                .filter(s -> "pending".equalsIgnoreCase(s)).count();
-        long acceptedCount = CSVService.readApplications().stream()
-                .filter(a -> positions.stream().anyMatch(p -> Objects.equals(p.getId(), a.getPositionId())))
-                .map(a -> Optional.ofNullable(a.getStatus()).orElse("pending"))
-                .filter(s -> "accepted".equalsIgnoreCase(s)).count();
-        long rejectedCount = CSVService.readApplications().stream()
-                .filter(a -> positions.stream().anyMatch(p -> Objects.equals(p.getId(), a.getPositionId())))
-                .map(a -> Optional.ofNullable(a.getStatus()).orElse("pending"))
-                .filter(s -> "rejected".equalsIgnoreCase(s)).count();
-        long waitlistCount = CSVService.readApplications().stream()
-                .filter(a -> positions.stream().anyMatch(p -> Objects.equals(p.getId(), a.getPositionId())))
-                .map(a -> Optional.ofNullable(a.getStatus()).orElse("pending"))
-                .filter(s -> "waitlist".equalsIgnoreCase(s)).count();
+        long pendingCount = CSVService.readApplications().stream().filter(a -> positions.stream().anyMatch(p -> Objects.equals(p.getId(), a.getPositionId())))
+                .map(a -> Optional.ofNullable(a.getStatus()).orElse("pending")).filter(s -> "pending".equalsIgnoreCase(s)).count();
+        long acceptedCount = CSVService.readApplications().stream().filter(a -> positions.stream().anyMatch(p -> Objects.equals(p.getId(), a.getPositionId())))
+                .map(a -> Optional.ofNullable(a.getStatus()).orElse("pending")).filter(s -> "accepted".equalsIgnoreCase(s)).count();
+        long rejectedCount = CSVService.readApplications().stream().filter(a -> positions.stream().anyMatch(p -> Objects.equals(p.getId(), a.getPositionId())))
+                .map(a -> Optional.ofNullable(a.getStatus()).orElse("pending")).filter(s -> "rejected".equalsIgnoreCase(s)).count();
+        long waitlistCount = CSVService.readApplications().stream().filter(a -> positions.stream().anyMatch(p -> Objects.equals(p.getId(), a.getPositionId())))
+            .map(a -> Optional.ofNullable(a.getStatus()).orElse("pending")).filter(s -> "waitlist".equalsIgnoreCase(s)).count();
 
         request.setAttribute("apps", apps);
         request.setAttribute("totalCount", apps.size());
@@ -134,8 +122,7 @@ public class MoReviewServlet extends HttpServlet {
         request.getRequestDispatcher("/jsp/mo-review.jsp").forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null || !"mo".equals(user.getRole())) {
