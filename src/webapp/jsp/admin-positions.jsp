@@ -9,7 +9,10 @@
 <div class="max-w-6xl mx-auto">
     <div class="flex items-center justify-between mb-8">
         <h2 class="text-3xl font-bold">Position Monitoring</h2>
-        <a href="${pageContext.request.contextPath}/dashboard" class="text-blue-600 hover:text-blue-800">&larr; Back to Dashboard</a>
+        <div class="flex items-center gap-4">
+            <a href="${pageContext.request.contextPath}/admin/positions/export" class="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-sm font-medium">Download Progress Report</a>
+            <a href="${pageContext.request.contextPath}/dashboard" class="text-blue-600 hover:text-blue-800">&larr; Back to Dashboard</a>
+        </div>
     </div>
 
     <div class="bg-white p-8 rounded-xl shadow-lg mb-8">
@@ -61,7 +64,7 @@
                     <td class="px-6 py-3">${pos.requirements}</td>
                     <td class="px-6 py-3">
                         <span class="px-2 py-1 rounded-full text-xs ${pos.status == 'open' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                            ${pos.status}
+                                ${pos.status}
                         </span>
                     </td>
                     <td class="px-6 py-3">
@@ -69,7 +72,7 @@
                             <input type="hidden" name="action" value="togglePosition" />
                             <input type="hidden" name="positionId" value="${pos.id}" />
                             <button type="submit" class="text-sm font-medium ${pos.status == 'open' ? 'text-red-600 hover:text-red-800' : 'text-green-600 hover:text-green-800'}">
-                                ${pos.status == 'open' ? 'Take Down' : 'Restore'}
+                                    ${pos.status == 'open' ? 'Take Down' : 'Restore'}
                             </button>
                         </form>
                         <form action="${pageContext.request.contextPath}/admin/positions" method="post" class="mt-1" onsubmit="return confirm('Delete this position and all related applications?');">
