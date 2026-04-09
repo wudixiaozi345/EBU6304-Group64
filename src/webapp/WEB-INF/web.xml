@@ -92,6 +92,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>TaEmailVerifyServlet</servlet-name>
+        <servlet-class>com.bupt.recruit.servlet.TaEmailVerifyServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TaEmailVerifyServlet</servlet-name>
+        <url-pattern>/register/verify-email</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>AdminMoServlet</servlet-name>
         <servlet-class>com.bupt.recruit.servlet.AdminMoServlet</servlet-class>
     </servlet>
@@ -155,12 +164,39 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>MoCandidateExportServlet</servlet-name>
+        <servlet-class>com.bupt.recruit.servlet.MoCandidateExportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MoCandidateExportServlet</servlet-name>
+        <url-pattern>/mo/review/export</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ResumePdfDownloadServlet</servlet-name>
+        <servlet-class>com.bupt.recruit.servlet.ResumePdfDownloadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResumePdfDownloadServlet</servlet-name>
+        <url-pattern>/mo/resume-pdf</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>AdminPositionServlet</servlet-name>
         <servlet-class>com.bupt.recruit.servlet.AdminPositionServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>AdminPositionServlet</servlet-name>
         <url-pattern>/admin/positions</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AdminPositionExportServlet</servlet-name>
+        <servlet-class>com.bupt.recruit.servlet.AdminPositionExportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminPositionExportServlet</servlet-name>
+        <url-pattern>/admin/positions/export</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -179,6 +215,28 @@
     <servlet-mapping>
         <servlet-name>AdminProfileServlet</servlet-name>
         <url-pattern>/admin/profile</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FeedbackServlet</servlet-name>
+        <servlet-class>com.bupt.recruit.servlet.FeedbackServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FeedbackServlet</servlet-name>
+        <url-pattern>/ta/feedback</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FeedbackServlet</servlet-name>
+        <url-pattern>/mo/feedback</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AdminFeedbackServlet</servlet-name>
+        <servlet-class>com.bupt.recruit.servlet.AdminFeedbackServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminFeedbackServlet</servlet-name>
+        <url-pattern>/admin/feedback</url-pattern>
     </servlet-mapping>
 
     <!-- Add other servlets here -->
