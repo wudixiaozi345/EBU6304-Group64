@@ -5,17 +5,118 @@ import com.bupt.recruit.model.Resume;
 import com.bupt.recruit.model.Course;
 import com.bupt.recruit.model.Position;
 import com.bupt.recruit.model.Application;
+import com.bupt.recruit.model.ApplicationDraft;
+import com.bupt.recruit.model.Feedback;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import java.util.*;
 
 public class CSVService {
-    private static final String DATA_DIR = "java-version/data/";
+    private static final File DATA_DIRECTORY = resolveDataDirectory();
+    private static final String DATA_DIR = DATA_DIRECTORY.getAbsolutePath() + File.separator;
     private static final String RESOURCE_DATA_DIR = "data/";
 
+    public static File getDataDirectory() {
+        return DATA_DIRECTORY;
+    }
+
+    public static File getDataFile(String filename) {
+        return new File(DATA_DIRECTORY, filename);
+    }
+
+    private static File resolveDataDirectory() {
+        String explicit = System.getProperty("recruit.data.dir");
+        if (explicit != null && !explicit.trim().isEmpty()) {
+            File configured = new File(explicit.trim());
+            if (configured.exists() && configured.isDirectory()) {
+                return configured.getAbsoluteFile();
+            }
+        }
+
+        String userDir = System.getProperty("user.dir", ".");
+        File byUserDir = findProjectDataDirectory(new File(userDir));
+        if (byUserDir != null) {
+            return byUserDir;
+        }
+
+        List<File> candidates = new ArrayList<>();
+        candidates.add(new File(userDir, "data"));
+        candidates.add(new File(userDir, "java-version/data"));
+        candidates.add(new File("data"));
+        candidates.add(new File("java-version/data"));
+
+        try {
+            File codeSource = new File(CSVService.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            File classesDir = codeSource.isFile() ? codeSource.getParentFile() : codeSource;
+            if (classesDir != null) {
+                File byCodeSource = findProjectDataDirectory(classesDir);
+                if (byCodeSource != null) {
+                    return byCodeSource;
+                }
+
+                File targetDir = classesDir.getParentFile();
+                if (targetDir != null) {
+                    candidates.add(new File(targetDir, "data"));
+
+                    File projectDir = targetDir.getParentFile();
+                    if (projectDir != null) {
+                        candidates.add(new File(projectDir, "data"));
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+            // Fall back to the candidate list built from user.dir.
+        }
+
+        for (File candidate : candidates) {
+            if (candidate != null && candidate.exists() && candidate.isDirectory() && !looksLikePackagedClassesData(candidate)) {
+                return candidate.getAbsoluteFile();
+            }
+        }
+
+        File fallback = new File(userDir, "java-version/data");
+        if (!fallback.exists()) {
+            fallback.mkdirs();
+        }
+        return fallback.getAbsoluteFile();
+    }
+
+    private static File findProjectDataDirectory(File start) {
+        File current = start;
+        while (current != null) {
+            File javaVersionData = new File(current, "java-version/data");
+            if (looksLikeValidDataDirectory(javaVersionData)) {
+                return javaVersionData.getAbsoluteFile();
+            }
+
+            File data = new File(current, "data");
+            if (looksLikeValidDataDirectory(data) && !looksLikePackagedClassesData(data)) {
+                return data.getAbsoluteFile();
+            }
+
+            current = current.getParentFile();
+        }
+        return null;
+    }
+
+    private static boolean looksLikeValidDataDirectory(File dir) {
+        if (dir == null || !dir.exists() || !dir.isDirectory()) {
+            return false;
+        }
+        return new File(dir, "ta_account.csv").exists() && new File(dir, "application.csv").exists();
+    }
+
+    private static boolean looksLikePackagedClassesData(File dir) {
+        String path = dir.getAbsolutePath().replace('\\', '/').toLowerCase(Locale.ROOT);
+        return path.contains("/web-inf/classes/data") || path.contains("/target/classes/data");
+    }
+
     private static InputStream getInputStream(String filename) throws FileNotFoundException {
-        File file = new File(DATA_DIR + filename);
+        File file = getDataFile(filename);
         if (file.exists()) {
             return new FileInputStream(file);
         }
@@ -239,7 +340,10 @@ public class CSVService {
                 String deadline = nextLine.length > 5 ? nextLine[5] : "";
                 String vacancies = nextLine.length > 6 ? nextLine[6] : "";
                 String moId = nextLine.length > 7 ? nextLine[7] : "";
-                Position pos = new Position(id, title, courseId, requirements, status, deadline, vacancies, moId);
+                String preferredCondition = nextLine.length > 8 ? nextLine[8] : "";
+                String minGpa = nextLine.length > 9 ? nextLine[9] : "";
+                String minEnglishScore = nextLine.length > 10 ? nextLine[10] : "";
+                Position pos = new Position(id, title, courseId, requirements, status, deadline, vacancies, moId, preferredCondition, minGpa, minEnglishScore);
                 positions.add(pos);
             }
         } catch (Exception e) {
@@ -250,7 +354,7 @@ public class CSVService {
 
     public static void writePositions(List<Position> positions) {
         try (CSVWriter writer = new CSVWriter(new FileWriter(DATA_DIR + "position.csv"))) {
-            writer.writeNext(new String[]{"id", "course_id", "title", "requirements", "status", "deadline", "vacancies", "mo_id"});
+            writer.writeNext(new String[]{"id", "course_id", "title", "requirements", "status", "deadline", "vacancies", "mo_id", "preferred_condition", "min_gpa", "min_english_score"});
             for (Position p : positions) {
                 writer.writeNext(new String[]{
                         p.getId(),
@@ -260,7 +364,10 @@ public class CSVService {
                         p.getStatus(),
                         p.getDeadline(),
                         p.getVacancies(),
-                        p.getMoId()
+                        p.getMoId(),
+                        safe(p.getPreferredCondition()),
+                        safe(p.getMinGpa()),
+                        safe(p.getMinEnglishScore())
                 });
             }
         } catch (Exception e) {
@@ -310,6 +417,8 @@ public class CSVService {
                 String status = nextLine.length > 3 ? nextLine[3] : "";
                 String reason = nextLine.length > 4 ? nextLine[4] : "";
                 String createdAt = nextLine.length > 5 ? nextLine[5] : "";
+                String resumePdfPath = nextLine.length > 6 ? nextLine[6] : "";
+                String interviewConfirmStatus = nextLine.length > 7 ? nextLine[7] : "not_sent";
 
                 // Backward compatibility: swap if positionId seems not a position and studentId looks like a position
                 if (!positionId.startsWith("P") && studentId.startsWith("P")) {
@@ -318,7 +427,10 @@ public class CSVService {
                     studentId = tmp;
                 }
 
-                apps.add(new Application(id, studentId, positionId, status, reason, createdAt));
+                Application app = new Application(id, studentId, positionId, status, reason, createdAt);
+                app.setResumePdfPath(resumePdfPath);
+                app.setInterviewConfirmStatus(interviewConfirmStatus == null || interviewConfirmStatus.trim().isEmpty() ? "not_sent" : interviewConfirmStatus);
+                apps.add(app);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -361,7 +473,7 @@ public class CSVService {
         allResumes.add(header);
         boolean found = false;
 
-        try (CSVReader reader = new CSVReader(new FileReader(DATA_DIR + "ta_resume.csv"))) {
+        try (CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(DATA_DIR + "ta_resume.csv"), StandardCharsets.UTF_8))) {
             String[] oldHeader = reader.readNext();
             String[] nextLine;
             while ((nextLine = reader.readNext()) != null) {
@@ -381,7 +493,7 @@ public class CSVService {
             allResumes.add(resumeToArray(resume));
         }
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter(DATA_DIR + "ta_resume.csv"))) {
+        try (CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(DATA_DIR + "ta_resume.csv"), StandardCharsets.UTF_8))) {
             writer.writeAll(allResumes);
         } catch (Exception e) {
             e.printStackTrace();
@@ -411,12 +523,16 @@ public class CSVService {
         File file = new File(DATA_DIR + "application.csv");
         List<String[]> allApps = new ArrayList<>();
         if (!file.exists()) {
-            allApps.add(new String[]{"id", "position_id", "student_id", "status", "reason", "createdAt"});
+            allApps.add(new String[]{"id", "position_id", "student_id", "status", "reason", "createdAt", "resumePdfPath", "interviewConfirmStatus"});
         }
         try (CSVReader reader = new CSVReader(new FileReader(file))) {
             String[] header = reader.readNext();
             if (header != null && allApps.isEmpty()) {
-                allApps.add(header);
+                if (header.length < 8) {
+                    allApps.add(new String[]{"id", "position_id", "student_id", "status", "reason", "createdAt", "resumePdfPath", "interviewConfirmStatus"});
+                } else {
+                    allApps.add(header);
+                }
             }
             String[] nextLine;
             while ((nextLine = reader.readNext()) != null) {
@@ -428,7 +544,16 @@ public class CSVService {
             e.printStackTrace();
         }
 
-        allApps.add(new String[]{app.getId(), app.getPositionId(), app.getStudentId(), app.getStatus(), app.getReason(), app.getCreatedAt()});
+        allApps.add(new String[]{
+            app.getId(),
+            app.getPositionId(),
+            app.getStudentId(),
+            app.getStatus(),
+            app.getReason(),
+            app.getCreatedAt(),
+            safe(app.getResumePdfPath()),
+            safe(app.getInterviewConfirmStatus())
+        });
 
         try (CSVWriter writer = new CSVWriter(new FileWriter(file))) {
             writer.writeAll(allApps);
@@ -444,7 +569,7 @@ public class CSVService {
             rows.add(new String[]{"app_id", "student_id", "name", "email", "major", "grade", "gpa", "englishScore", "skills", "relatedCourses", "awards", "projects", "experience", "competency", "workHours"});
         }
 
-        try (CSVReader reader = new CSVReader(new FileReader(file))) {
+        try (CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String[] header = reader.readNext();
             if (header != null && rows.isEmpty()) {
                 rows.add(header);
@@ -480,7 +605,7 @@ public class CSVService {
                 safe(resume.getWorkHours())
         });
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter(file))) {
+        try (CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
             writer.writeAll(rows);
         } catch (Exception e) {
             e.printStackTrace();
@@ -493,7 +618,7 @@ public class CSVService {
             return null;
         }
 
-        try (CSVReader reader = new CSVReader(new FileReader(file))) {
+        try (CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             reader.readNext();
             String[] line;
             while ((line = reader.readNext()) != null) {
@@ -517,10 +642,23 @@ public class CSVService {
         try (CSVReader reader = new CSVReader(new FileReader(file))) {
             String[] header = reader.readNext();
             if (header != null) {
-                allApps.add(header);
+                if (header.length < 8) {
+                    allApps.add(new String[]{"id", "position_id", "student_id", "status", "reason", "createdAt", "resumePdfPath", "interviewConfirmStatus"});
+                } else {
+                    allApps.add(header);
+                }
             }
             String[] nextLine;
             while ((nextLine = reader.readNext()) != null) {
+                if (nextLine.length < 8) {
+                    String[] expanded = new String[8];
+                    for (int i = 0; i < nextLine.length; i++) {
+                        expanded[i] = nextLine[i];
+                    }
+                    if (expanded[6] == null) expanded[6] = "";
+                    if (expanded[7] == null) expanded[7] = "not_sent";
+                    nextLine = expanded;
+                }
                 if (nextLine.length > 0 && nextLine[0].equals(appId)) {
                     if (nextLine.length > 3) nextLine[3] = status;
                     if (nextLine.length > 4) nextLine[4] = reason;
@@ -661,5 +799,237 @@ public class CSVService {
 
     private static String safe(String s) {
         return s == null ? "" : s;
+    }
+
+    public static Application findApplicationById(String appId) {
+        return readApplications().stream()
+                .filter(a -> appId != null && appId.equals(a.getId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public static void updateApplicationInterviewConfirmStatus(String appId, String confirmStatus) {
+        File file = new File(DATA_DIR + "application.csv");
+        List<String[]> allApps = new ArrayList<>();
+        try (CSVReader reader = new CSVReader(new FileReader(file))) {
+            String[] header = reader.readNext();
+            if (header != null) {
+                if (header.length < 8) {
+                    allApps.add(new String[]{"id", "position_id", "student_id", "status", "reason", "createdAt", "resumePdfPath", "interviewConfirmStatus"});
+                } else {
+                    allApps.add(header);
+                }
+            }
+            String[] nextLine;
+            while ((nextLine = reader.readNext()) != null) {
+                if (nextLine.length < 8) {
+                    String[] expanded = new String[8];
+                    for (int i = 0; i < nextLine.length; i++) expanded[i] = nextLine[i];
+                    if (expanded[6] == null) expanded[6] = "";
+                    if (expanded[7] == null) expanded[7] = "not_sent";
+                    nextLine = expanded;
+                }
+                if (nextLine.length > 0 && appId != null && appId.equals(nextLine[0])) {
+                    nextLine[7] = confirmStatus == null ? "pending" : confirmStatus;
+                }
+                allApps.add(nextLine);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try (CSVWriter writer = new CSVWriter(new FileWriter(file))) {
+            writer.writeAll(allApps);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean isTaProfileCompleted(String studentId) {
+        return readTaUsers().stream()
+                .filter(u -> studentId != null && studentId.equals(u.getId()))
+                .map(User::getStatus)
+                .findFirst()
+                .map(s -> "active".equalsIgnoreCase(s))
+                .orElse(false);
+    }
+
+    public static void updateTaStatus(String studentId, String status) {
+        List<User> users = readTaUsers();
+        boolean changed = false;
+        for (User u : users) {
+            if (studentId != null && studentId.equals(u.getId())) {
+                u.setStatus(status == null ? "active" : status);
+                changed = true;
+                break;
+            }
+        }
+        if (changed) {
+            writeTaUsers(users);
+        }
+    }
+
+    public static List<ApplicationDraft> readApplicationDrafts() {
+        List<ApplicationDraft> drafts = new ArrayList<>();
+        File file = new File(DATA_DIR + "application_draft.csv");
+        if (!file.exists()) {
+            return drafts;
+        }
+
+        try (CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+            reader.readNext();
+            String[] line;
+            while ((line = reader.readNext()) != null) {
+                if (line.length < 22) {
+                    continue;
+                }
+
+                Resume resume = new Resume(
+                        line[1], line[7], line[8], line[9], line[10], line[11], line[12], line[13], line[14], line[15],
+                        line[16], line[17], line[18], line[19]
+                );
+                ApplicationDraft draft = new ApplicationDraft(line[0], line[1], line[2], line[3], line[4], line[5], line[6], resume);
+                drafts.add(draft);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return drafts;
+    }
+
+    public static ApplicationDraft findValidDraft(String studentId, String jobId) {
+        LocalDateTime now = LocalDateTime.now();
+        return readApplicationDrafts().stream()
+                .filter(d -> studentId != null && studentId.equals(d.getStudentId()))
+                .filter(d -> jobId != null && jobId.equals(d.getJobId()))
+                .filter(d -> {
+                    try {
+                        return d.getExpiresAt() != null && LocalDateTime.parse(d.getExpiresAt()).isAfter(now);
+                    } catch (Exception ex) {
+                        return false;
+                    }
+                })
+                .findFirst()
+                .orElse(null);
+    }
+
+    public static void saveApplicationDraft(ApplicationDraft draft) {
+        List<ApplicationDraft> allDrafts = readApplicationDrafts();
+        allDrafts = allDrafts.stream()
+                .filter(d -> !(Objects.equals(d.getStudentId(), draft.getStudentId()) && Objects.equals(d.getJobId(), draft.getJobId())))
+                .collect(Collectors.toList());
+        allDrafts.add(draft);
+        writeApplicationDrafts(allDrafts);
+    }
+
+    public static void deleteApplicationDraft(String studentId, String jobId) {
+        List<ApplicationDraft> allDrafts = readApplicationDrafts().stream()
+                .filter(d -> !(Objects.equals(d.getStudentId(), studentId) && Objects.equals(d.getJobId(), jobId)))
+                .collect(Collectors.toList());
+        writeApplicationDrafts(allDrafts);
+    }
+
+    private static void writeApplicationDrafts(List<ApplicationDraft> drafts) {
+        File file = new File(DATA_DIR + "application_draft.csv");
+        try (CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            writer.writeNext(new String[]{
+                    "id", "student_id", "job_id", "mode", "resume_pdf_path", "updated_at", "expires_at",
+                    "name", "email", "major", "grade", "gpa", "englishScore", "skills", "relatedCourses",
+                    "awards", "projects", "experience", "competency", "workHours", "_reserved1", "_reserved2"
+            });
+
+            for (ApplicationDraft d : drafts) {
+                Resume r = d.getResume() == null ? new Resume() : d.getResume();
+                writer.writeNext(new String[]{
+                        safe(d.getId()),
+                        safe(d.getStudentId()),
+                        safe(d.getJobId()),
+                        safe(d.getMode()),
+                        safe(d.getResumePdfPath()),
+                        safe(d.getUpdatedAt()),
+                        safe(d.getExpiresAt()),
+                        safe(r.getName()),
+                        safe(r.getEmail()),
+                        safe(r.getMajor()),
+                        safe(r.getGrade()),
+                        safe(r.getGpa()),
+                        safe(r.getEnglishScore()),
+                        safe(r.getSkills()),
+                        safe(r.getRelatedCourses()),
+                        safe(r.getAwards()),
+                        safe(r.getProjects()),
+                        safe(r.getExperience()),
+                        safe(r.getCompetency()),
+                        safe(r.getWorkHours()),
+                        "",
+                        ""
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<Feedback> readFeedbacks() {
+        List<Feedback> feedbacks = new ArrayList<>();
+        File file = new File(DATA_DIR + "feedback.csv");
+        if (!file.exists()) {
+            return feedbacks;
+        }
+
+        try (CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+            reader.readNext();
+            String[] line;
+            while ((line = reader.readNext()) != null) {
+                if (line.length < 8) {
+                    continue;
+                }
+                feedbacks.add(new Feedback(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7]));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return feedbacks;
+    }
+
+    public static void saveFeedback(Feedback feedback) {
+        List<Feedback> all = readFeedbacks();
+        all.add(feedback);
+        writeFeedbacks(all);
+    }
+
+    public static void updateFeedback(String feedbackId, String status, String reply) {
+        List<Feedback> all = readFeedbacks();
+        for (Feedback f : all) {
+            if (feedbackId != null && feedbackId.equals(f.getId())) {
+                if (status != null && !status.trim().isEmpty()) {
+                    f.setStatus(status.trim());
+                }
+                f.setReply(reply == null ? "" : reply.trim());
+                break;
+            }
+        }
+        writeFeedbacks(all);
+    }
+
+    private static void writeFeedbacks(List<Feedback> feedbacks) {
+        File file = new File(DATA_DIR + "feedback.csv");
+        try (CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            writer.writeNext(new String[]{"id", "from_role", "from_user_id", "title", "content", "status", "reply", "created_at"});
+            for (Feedback f : feedbacks) {
+                writer.writeNext(new String[]{
+                        safe(f.getId()),
+                        safe(f.getFromRole()),
+                        safe(f.getFromUserId()),
+                        safe(f.getTitle()),
+                        safe(f.getContent()),
+                        safe(f.getStatus()),
+                        safe(f.getReply()),
+                        safe(f.getCreatedAt())
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
