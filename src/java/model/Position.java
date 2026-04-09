@@ -9,6 +9,9 @@ public class Position {
     private String deadline;
     private String vacancies;
     private String moId;
+    private String preferredCondition;
+    private String minGpa;
+    private String minEnglishScore;
     private boolean applied;
     private String courseName; // 新增：课程名称
     private String applyDisabledReason;
@@ -23,8 +26,22 @@ public class Position {
         this.deadline = deadline == null ? "" : deadline;
         this.vacancies = vacancies == null ? "" : vacancies;
         this.moId = moId == null ? "" : moId;
+        this.preferredCondition = "";
         this.applied = false;
         this.applyDisabledReason = "";
+    }
+
+    public Position(String id, String title, String courseId, String requirements, String status, String deadline, String vacancies, String moId, String preferredCondition) {
+        this(id, title, courseId, requirements, status, deadline, vacancies, moId);
+        this.preferredCondition = preferredCondition == null ? "" : preferredCondition;
+        this.minGpa = "";
+        this.minEnglishScore = "";
+    }
+
+    public Position(String id, String title, String courseId, String requirements, String status, String deadline, String vacancies, String moId, String preferredCondition, String minGpa, String minEnglishScore) {
+        this(id, title, courseId, requirements, status, deadline, vacancies, moId, preferredCondition);
+        this.minGpa = minGpa == null ? "" : minGpa;
+        this.minEnglishScore = minEnglishScore == null ? "" : minEnglishScore;
     }
 
     public Position(String id, String title, String courseId, String requirements, String deadline, String vacancies, String moId) {
@@ -122,5 +139,29 @@ public class Position {
 
     public void setApplyDisabledReason(String applyDisabledReason) {
         this.applyDisabledReason = applyDisabledReason == null ? "" : applyDisabledReason;
+    }
+
+    public String getPreferredCondition() {
+        return preferredCondition;
+    }
+
+    public void setPreferredCondition(String preferredCondition) {
+        this.preferredCondition = preferredCondition == null ? "" : preferredCondition;
+    }
+
+    public String getMinGpa() {
+        return minGpa;
+    }
+
+    public void setMinGpa(String minGpa) {
+        this.minGpa = minGpa == null ? "" : minGpa;
+    }
+
+    public String getMinEnglishScore() {
+        return minEnglishScore;
+    }
+
+    public void setMinEnglishScore(String minEnglishScore) {
+        this.minEnglishScore = minEnglishScore == null ? "" : minEnglishScore;
     }
 }

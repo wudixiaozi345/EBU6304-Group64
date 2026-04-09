@@ -9,6 +9,8 @@ public class Application {
     private String status;
     private String reason;
     private String createdAt;
+    private String resumePdfPath;
+    private String interviewConfirmStatus;
 
     // 用于页面展示的扩展字段
     private String positionTitle;
@@ -25,6 +27,8 @@ public class Application {
         this.status = status;
         this.reason = reason;
         this.createdAt = createdAt;
+        this.resumePdfPath = "";
+        this.interviewConfirmStatus = "not_sent";
     }
 
     // Getter & Setter 完整齐全
@@ -106,5 +110,21 @@ public class Application {
 
     public void setResume(Resume resume) {
         this.resume = resume;
+    }
+
+    public String getResumePdfPath() {
+        return resumePdfPath;
+    }
+
+    public void setResumePdfPath(String resumePdfPath) {
+        this.resumePdfPath = resumePdfPath;
+    }
+
+    public String getInterviewConfirmStatus() {
+        return interviewConfirmStatus;
+    }
+
+    public void setInterviewConfirmStatus(String interviewConfirmStatus) {
+        this.interviewConfirmStatus = interviewConfirmStatus;
     }
 }
