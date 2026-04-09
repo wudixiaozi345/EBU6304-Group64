@@ -17,6 +17,11 @@ public class ResumeServlet extends HttpServlet {
             return;
         }
 
+        if ("ta".equalsIgnoreCase(user.getRole()) && !CSVService.isTaProfileCompleted(user.getId())) {
+            response.sendRedirect(request.getContextPath() + "/ta/profile?mustComplete=true");
+            return;
+        }
+
         Resume resume = CSVService.getResume(user.getId());
         request.setAttribute("resume", resume);
         request.getRequestDispatcher("/jsp/ta-resume.jsp").forward(request, response);
@@ -28,6 +33,11 @@ public class ResumeServlet extends HttpServlet {
 
         if (user == null) {
             response.sendError(403);
+            return;
+        }
+
+        if ("ta".equalsIgnoreCase(user.getRole()) && !CSVService.isTaProfileCompleted(user.getId())) {
+            response.sendRedirect(request.getContextPath() + "/ta/profile?mustComplete=true");
             return;
         }
 
