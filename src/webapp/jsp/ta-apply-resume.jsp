@@ -132,7 +132,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <button type="submit" name="action" value="saveDraft" class="w-full py-4 bg-slate-600 text-white rounded-xl hover:bg-slate-700 transition-colors text-lg font-bold">Save Draft (7 days)</button>
+                <button type="submit" name="action" value="saveDraft" formnovalidate class="w-full py-4 bg-slate-600 text-white rounded-xl hover:bg-slate-700 transition-colors text-lg font-bold">Save Draft (7 days)</button>
                 <button type="submit" name="action" value="submit" class="w-full py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-lg font-bold">Submit Application</button>
             </div>
         </form>
