@@ -1,5 +1,4 @@
-package com.bupt.recruit.model;
-
+package model;
 public class Course {
     private String id;
     private String name;
