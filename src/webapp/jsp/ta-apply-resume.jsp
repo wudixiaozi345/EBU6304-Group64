@@ -35,6 +35,7 @@
         <form action="${pageContext.request.contextPath}/ta/apply" method="post" enctype="multipart/form-data" class="space-y-6">
             <input type="hidden" name="jobId" value="${jobId}" />
             <input type="hidden" name="existingPdfPath" value="${draft.resumePdfPath}" />
+            <input type="hidden" id="formAction" name="action" value="submit" />
 
             <div class="p-4 border rounded-lg bg-slate-50">
                 <label class="block text-sm font-medium text-slate-700 mb-2">Resume Submission Mode</label>
@@ -132,8 +133,8 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <button type="submit" name="action" value="saveDraft" formnovalidate class="w-full py-4 bg-slate-600 text-white rounded-xl hover:bg-slate-700 transition-colors text-lg font-bold">Save Draft (7 days)</button>
-                <button type="submit" name="action" value="submit" class="w-full py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-lg font-bold">Submit Application</button>
+                <button type="button" onclick="submitAsDraft(this.form)" style="width:100%; padding:16px 20px; background:#374151; color:#ffffff; border:1px solid #1f2937; border-radius:12px; font-size:28px; font-weight:700; line-height:1; cursor:pointer;">Save Draft (7 days)</button>
+                <button type="submit" onclick="document.getElementById('formAction').value='submit'" class="w-full py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-lg font-bold">Submit Application</button>
             </div>
         </form>
     </div>
@@ -161,6 +162,15 @@
             radios.forEach(function (r) { r.addEventListener('change', updateOnlineRequired); });
             updateOnlineRequired();
         })();
+
+        function submitAsDraft(form) {
+            var actionInput = document.getElementById('formAction');
+            if (actionInput) {
+                actionInput.value = 'saveDraft';
+            }
+            // Direct submit bypasses HTML required validation for draft save.
+            form.submit();
+        }
     </script>
 </body>
 </html>
