@@ -1,4 +1,4 @@
-package com.bupt.recruit.service;
+package service;
 
 import com.bupt.recruit.model.User;
 import com.bupt.recruit.model.Resume;
