@@ -1,5 +1,4 @@
-package com.bupt.recruit.model;
-
+package model;
 public class Resume {
     private String studentId;
     private String name;
