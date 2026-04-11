@@ -1,4 +1,4 @@
-package com.bupt.recruit.model;
+package model;
 
 public class User {
     private String id;
