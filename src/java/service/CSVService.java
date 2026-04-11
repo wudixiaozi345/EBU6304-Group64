@@ -1,12 +1,12 @@
 package service;
 
-import com.bupt.recruit.model.User;
-import com.bupt.recruit.model.Resume;
-import com.bupt.recruit.model.Course;
-import com.bupt.recruit.model.Position;
-import com.bupt.recruit.model.Application;
-import com.bupt.recruit.model.ApplicationDraft;
-import com.bupt.recruit.model.Feedback;
+import model.User;
+import model.Resume;
+import model.Course;
+import model.Position;
+import model.Application;
+import model.ApplicationDraft;
+import model.Feedback;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import java.io.*;
