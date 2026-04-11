@@ -1,5 +1,4 @@
-package com.bupt.recruit.model;
-
+package model;
 public class Position {
     private String id;
     private String title;
