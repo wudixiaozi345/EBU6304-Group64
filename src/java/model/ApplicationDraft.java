@@ -1,5 +1,9 @@
 package model;
 
+/**
+ * Application draft model class representing TA position application draft information.
+ * Contains draft ID, student ID, position ID, mode, resume PDF path, update time, expiration time, etc.
+ */
 public class ApplicationDraft {
     private String id;
     private String studentId;
@@ -12,6 +16,17 @@ public class ApplicationDraft {
 
     public ApplicationDraft() {}
 
+    /**
+     * Constructor for creating an ApplicationDraft object.
+     * @param id draft ID
+     * @param studentId student ID
+     * @param jobId position ID
+     * @param mode application mode
+     * @param resumePdfPath resume PDF path
+     * @param updatedAt update time
+     * @param expiresAt expiration time
+     * @param resume resume object
+     */
     public ApplicationDraft(String id, String studentId, String jobId, String mode, String resumePdfPath, String updatedAt, String expiresAt, Resume resume) {
         this.id = id;
         this.studentId = studentId;
