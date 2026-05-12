@@ -2,6 +2,10 @@ package model;
 
 import com.bupt.recruit.model.Resume;
 
+/**
+ * Application model class representing TA position application information.
+ * Contains application ID, student ID, position ID, status, reason, creation time, etc.
+ */
 public class Application {
     private String id;
     private String studentId;
@@ -12,14 +16,22 @@ public class Application {
     private String resumePdfPath;
     private String interviewConfirmStatus;
 
-    // 用于页面展示的扩展字段
+    // Extension fields for page display
     private String positionTitle;
     private String courseName;
     private String courseId;
 
-    private Resume resume; // 关联 TA 简历
+    private Resume resume; // Associated TA resume
 
-    // 构造方法（对应 CSV 里的 6 个字段）
+    /**
+     * Constructor for creating an Application object.
+     * @param id application ID
+     * @param studentId student ID
+     * @param positionId position ID
+     * @param status application status
+     * @param reason application reason
+     * @param createdAt creation time
+     */
     public Application(String id, String studentId, String positionId, String status, String reason, String createdAt) {
         this.id = id;
         this.studentId = studentId;
@@ -31,7 +43,7 @@ public class Application {
         this.interviewConfirmStatus = "not_sent";
     }
 
-    // Getter & Setter 完整齐全
+    // Complete getters and setters
     public String getId() {
         return id;
     }
