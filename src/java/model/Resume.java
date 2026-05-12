@@ -1,4 +1,9 @@
 package model;
+
+/**
+ * Resume model class representing student's resume information.
+ * Contains student ID, name, email, major, grade, GPA, English score, skills, related courses, awards, projects, experience, competency, work hours, etc.
+ */
 public class Resume {
     private String studentId;
     private String name;
@@ -17,6 +22,24 @@ public class Resume {
 
     // Constructors, Getters, and Setters
     public Resume() {}
+
+    /**
+     * Constructor for creating a Resume object.
+     * @param studentId student ID
+     * @param name name
+     * @param email email
+     * @param major major
+     * @param grade grade
+     * @param gpa GPA
+     * @param englishScore English score
+     * @param skills skills
+     * @param relatedCourses related courses
+     * @param awards awards
+     * @param projects projects
+     * @param experience experience
+     * @param competency competency
+     * @param workHours work hours
+     */
     public Resume(String studentId, String name, String email, String major, String grade, String gpa, String englishScore, String skills, String relatedCourses, String awards, String projects, String experience, String competency, String workHours) {
         this.studentId = studentId;
         this.name = name;
