@@ -1,4 +1,9 @@
 package model;
+
+/**
+ * Feedback model class representing user feedback information.
+ * Contains feedback ID, sender role, sender user ID, title, content, status, reply, creation time, etc.
+ */
 public class Feedback {
     private String id;
     private String fromRole;
@@ -11,6 +16,17 @@ public class Feedback {
 
     public Feedback() {}
 
+    /**
+     * Constructor for creating a Feedback object.
+     * @param id feedback ID
+     * @param fromRole sender role
+     * @param fromUserId sender user ID
+     * @param title title
+     * @param content content
+     * @param status status
+     * @param reply reply
+     * @param createdAt creation time
+     */
     public Feedback(String id, String fromRole, String fromUserId, String title, String content, String status, String reply, String createdAt) {
         this.id = id;
         this.fromRole = fromRole;
