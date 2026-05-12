@@ -1,5 +1,9 @@
 package model;
 
+/**
+ * User model class representing system users.
+ * Contains user ID, name, email, password, role, status, etc.
+ */
 public class User {
     private String id;
     private String name;
@@ -10,6 +14,16 @@ public class User {
 
     // Constructors, Getters, and Setters
     public User() {}
+
+    /**
+     * Constructor for creating a User object.
+     * @param id user ID
+     * @param name name
+     * @param email email
+     * @param password password
+     * @param role role
+     * @param status status
+     */
     public User(String id, String name, String email, String password, String role, String status) {
         this.id = id;
         this.name = name;
