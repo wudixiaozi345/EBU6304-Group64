@@ -44,6 +44,48 @@ public class ApplicationTest {
     }
 
     @Test
+    public void testGetApplicationsByPosition() {
+        System.out.println("Testing get applications by position...");
+        ApplicationService.deleteApplication("APP_TEST_POSITION_001");
+        ApplicationService.deleteApplication("APP_TEST_POSITION_002");
+        ApplicationService.deleteApplication("APP_TEST_POSITION_003");
+
+        Application app1 = new Application("APP_TEST_POSITION_001", "20240001", "P_TEST_POSITION", "pending", "", "2024-01-01");
+        Application app2 = new Application("APP_TEST_POSITION_002", "20240002", "P_TEST_POSITION", "pending", "", "2024-01-02");
+        Application appOther = new Application("APP_TEST_POSITION_003", "20240003", "P_OTHER_POSITION", "pending", "", "2024-01-03");
+        ApplicationService.saveApplication(app1);
+        ApplicationService.saveApplication(app2);
+        ApplicationService.saveApplication(appOther);
+
+        List<Application> positionApps = ApplicationService.getApplicationsByPositionId("P_TEST_POSITION");
+        assertNotNull("Applications list should not be null", positionApps);
+        assertEquals("Should have two applications for target position", 2, positionApps.size());
+
+        ApplicationService.deleteApplication("APP_TEST_POSITION_001");
+        ApplicationService.deleteApplication("APP_TEST_POSITION_002");
+        ApplicationService.deleteApplication("APP_TEST_POSITION_003");
+        System.out.println("PASS: Retrieved applications by position successfully");
+    }
+
+    @Test
+    public void testUpdateApplicationInterviewConfirmStatus() {
+        System.out.println("Testing interview confirm status update...");
+        String testAppId = "APP_TEST_INTERVIEW_001";
+        ApplicationService.deleteApplication(testAppId);
+
+        Application app = new Application(testAppId, "20240004", "P_TEST_INTERVIEW", "pending", "", "2024-01-04");
+        ApplicationService.saveApplication(app);
+
+        ApplicationService.updateApplicationInterviewConfirmStatus(testAppId, "confirmed");
+        Application updated = ApplicationService.findApplicationById(testAppId);
+        assertNotNull("Application should exist", updated);
+        assertEquals("Interview confirm status should be updated", "confirmed", updated.getInterviewConfirmStatus());
+
+        ApplicationService.deleteApplication(testAppId);
+        System.out.println("PASS: Interview confirm status updated successfully");
+    }
+
+    @Test
     public void testDeleteApplication() {
         System.out.println("Testing application deletion...");
         ApplicationService.deleteApplication("APP_TEST_001");
