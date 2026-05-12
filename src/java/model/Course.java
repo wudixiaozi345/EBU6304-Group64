@@ -1,4 +1,9 @@
 package model;
+
+/**
+ * Course model class representing course information.
+ * Contains course ID, name, credits, MO ID, semester, status, etc.
+ */
 public class Course {
     private String id;
     private String name;
@@ -7,11 +12,28 @@ public class Course {
     private String semester;
     private String status;
 
+    /**
+     * Constructor for creating a Course object with default status 'active'.
+     * @param id course ID
+     * @param name course name
+     * @param credits credits
+     * @param moId MO ID
+     * @param semester semester
+     */
     // Backward-compatible constructor defaults status to active.
     public Course(String id, String name, String credits, String moId, String semester) {
         this(id, name, credits, moId, semester, "active");
     }
 
+    /**
+     * Constructor for creating a Course object.
+     * @param id course ID
+     * @param name course name
+     * @param credits credits
+     * @param moId MO ID
+     * @param semester semester
+     * @param status status
+     */
     public Course(String id, String name, String credits, String moId, String semester, String status) {
         this.id = id;
         this.name = name;
@@ -21,7 +43,7 @@ public class Course {
         this.status = (status == null || status.trim().isEmpty()) ? "active" : status;
     }
 
-    // 必须有这些 getter 方法！否则部分 JSP 会报错
+    
     public String getId() {
         return id;
     }
@@ -46,7 +68,7 @@ public class Course {
         return status;
     }
 
-    // 可选：setter 方法
+    // Optional: setter methods
     public void setId(String id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setCredits(String credits) { this.credits = credits; }
