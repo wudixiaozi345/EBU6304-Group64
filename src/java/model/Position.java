@@ -1,4 +1,9 @@
 package model;
+
+/**
+ * Position model class representing TA position information.
+ * Contains position ID, title, course ID, requirements, status, deadline, vacancies, MO ID, etc.
+ */
 public class Position {
     private String id;
     private String title;
@@ -12,10 +17,21 @@ public class Position {
     private String minGpa;
     private String minEnglishScore;
     private boolean applied;
-    private String courseName; // 新增：课程名称
+    private String courseName; // New: course name
     private String applyDisabledReason;
 
-    // 7 参数构造（对应 CSV）：含 status, deadline, vacancies, moId
+    /**
+     * Constructor for creating a Position object.
+     * @param id position ID
+     * @param title position title
+     * @param courseId course ID
+     * @param requirements position requirements
+     * @param status position status
+     * @param deadline deadline
+     * @param vacancies number of vacancies
+     * @param moId MO ID
+     */
+    // 7-parameter constructor (corresponding to CSV): contains status, deadline, vacancies, moId
     public Position(String id, String title, String courseId, String requirements, String status, String deadline, String vacancies, String moId) {
         this.id = id;
         this.title = title;
@@ -107,7 +123,7 @@ public class Position {
     public void setMoId(String moId) {
         this.moId = moId;
     }
-
+    // Mark whether the TA has already applied for this position. The front-end controls whether the application button is clickable to avoid duplicate applications.
     public boolean isApplied() {
         return applied;
     }
