@@ -13,14 +13,14 @@ public class AdminMoStatusServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
 
-        List<User> users = CSVService.readUsers();
+        List<User> users = CSVService.readMoUsers();
         for (User u : users) {
             if (u.getId().equals(id)) {
                 u.setStatus("active".equals(u.getStatus()) ? "disabled" : "active");
                 break;
             }
         }
-        CSVService.writeUsers(users);
+        CSVService.writeMoUsers(users);
         response.sendRedirect("../mos");
     }
 }

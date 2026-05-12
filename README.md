@@ -132,3 +132,46 @@ The system stores data in CSV files under `java-version/data/`.
 - The application currently reads and writes data directly to CSV files.
 - Keep the `data/` folder consistent between development and runtime.
 - If you change CSV structure, update the corresponding service parsing code in `src/main/java/com/bupt/recruit/service/`.
+## How to Run (Based on Current Project Configuration)
+
+### 1) Prerequisites
+- Install JDK 8 or above (JDK 11 is recommended).
+- Install Maven 3.6+.
+
+### 2) Recommended: Run with Maven Embedded Tomcat
+From the `java-version/` directory, run:
+
+```bash
+mvn clean
+mvn tomcat7:run
+```
+
+After startup, open:
+- `http://localhost:8082/recruit/login.jsp`
+
+Notes:
+- Port `8082` and context path `/recruit` come from the `tomcat7-maven-plugin` configuration in `pom.xml`.
+- This approach does not require manual installation or deployment to an external Tomcat server.
+
+### 3) Alternative: Package and Deploy to External Tomcat
+From the `java-version/` directory, run:
+
+```bash
+mvn clean package
+```
+
+Copy the generated WAR file in `target/` (usually `recruit-system-1.0-SNAPSHOT.war`) to the external Tomcat `webapps/` directory, then start Tomcat.
+
+The access URL depends on the WAR file name:
+- If you keep the original name: `http://localhost:8080/recruit-system-1.0-SNAPSHOT/login.jsp`
+- If you rename it to `recruit.war`: `http://localhost:8080/recruit/login.jsp`
+
+### 4) Data Directory (Important)
+- The system prioritizes reading from `java-version/data/`.
+- You can also explicitly set the data directory via JVM property:
+
+```bash
+mvn tomcat7:run -Drecruit.data.dir="D:/Java Code/ta-recruitment-system/java-version/data"
+```
+
+- This directory must contain required CSV files such as `ta_account.csv` and `application.csv`.

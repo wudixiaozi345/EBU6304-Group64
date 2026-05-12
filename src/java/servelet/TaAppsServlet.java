@@ -30,6 +30,11 @@ public class TaAppsServlet extends HttpServlet {
             return;
         }
 
+        if (!CSVService.isTaProfileCompleted(user.getId())) {
+            response.sendRedirect(request.getContextPath() + "/ta/profile?mustComplete=true");
+            return;
+        }
+
         List<Application> allApps = CSVService.readApplications();
         List<Application> userApps = allApps.stream()
                 .filter(app -> user.getId().equals(app.getStudentId()))
@@ -63,6 +68,11 @@ public class TaAppsServlet extends HttpServlet {
 
         if (user == null || !"ta".equals(user.getRole())) {
             response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
+            return;
+        }
+
+        if (!CSVService.isTaProfileCompleted(user.getId())) {
+            response.sendRedirect(request.getContextPath() + "/ta/profile?mustComplete=true");
             return;
         }
 
