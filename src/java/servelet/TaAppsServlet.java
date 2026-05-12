@@ -1,4 +1,4 @@
-package com.bupt.recruit.servlet;
+package servlet;
 
 import com.bupt.recruit.model.Application;
 import com.bupt.recruit.model.Course;
